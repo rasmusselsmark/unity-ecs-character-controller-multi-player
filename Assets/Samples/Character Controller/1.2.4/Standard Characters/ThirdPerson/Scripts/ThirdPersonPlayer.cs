@@ -2,19 +2,30 @@ using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 
-[Serializable]
+[GhostComponent]
 public struct ThirdPersonPlayer : IComponentData
 {
-    public Entity ControlledCharacter;
-    public Entity ControlledCamera;
+    [GhostField] public Entity ControlledCharacter;
+    [GhostField] public Entity ControlledCamera;
 }
 
 [Serializable]
-public struct ThirdPersonPlayerInputs : IComponentData
+public struct ThirdPersonPlayerInputs : IInputComponentData
 {
     public float2 MoveInput;
     public float2 CameraLookInput;
     public float CameraZoomInput;
-    public FixedInputEvent JumpPressed;
+    public InputEvent JumpPressed;
+}
+
+[Serializable]
+[GhostComponent(SendTypeOptimization = GhostSendType.OnlyPredictedClients)]
+public struct ThirdPersonPlayerNetworkInput : IComponentData
+{
+    [GhostField()]
+    public float2 LastProcessedCameraLookInput;
+    [GhostField()]
+    public float LastProcessedCameraZoomInput;
 }
